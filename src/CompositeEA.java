@@ -13,7 +13,7 @@
  *
  * @author Alejandro Hernández Mora <alejandrohmora@ciencias.unam.mx>
  */
-public interface CompositeEA {
+public interface CompositeEA extends Expresion {
 
     /**
      *

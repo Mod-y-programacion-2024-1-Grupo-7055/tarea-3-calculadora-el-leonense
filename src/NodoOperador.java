@@ -1,121 +1,171 @@
 
 /**
- * Clase abstracta que modela a los nodos que contienen operadores aritméticos
- * y paréntesis izquierdos. La clase no puede ser concreta porque la
- * evaluación de cada nodo depende del operador de cada nodo.
+ * La clase abstracta NodoOperador representa un operador en una expresión matemática.
+ * Esta clase implementa la interfaz Expresion y puede tener uno o dos operandos, dependiendo del operador.
+ * Los operandos son también Expresiones, lo que permite construir árboles de expresiones complejas.
  * 
- * @author Alejandro Hernández Mora <alejandrohmora@ciencias.unam.mx>
+ * En el patrón de diseño Composite, NodoOperador es un "Composite", ya que puede contener otros componentes.
+ * Los operandos (operandoIzquierdo y operandoDerecho) son los "componentes" en este patrón.
+ * Pueden ser otros NodoOperador (otro Composite) o una implementación simple de Expresion (un "Leaf" en el patrón Composite).
  */
-public abstract class NodoOperador implements CompositeEA{
+public abstract class NodoOperador implements CompositeEA {
+    protected Expresion operandoIzquierdo;
+    protected Expresion operandoDerecho;
+
+    public abstract String getOperador();
+    public abstract int getPrecedencia();
+    public abstract boolean esBinario();
+
+    
+    
+
+// Método factoryMethodOperadorNuevo
+public static NodoOperador factoryMethodOperadorNuevo(String operador, Expresion operandoIzquierdo, Expresion operandoDerecho) {
+    if (operador.equals("+")) {
+        return new NodoSuma(operandoIzquierdo, operandoDerecho);
+    } else if (operador.equals("-")) {
+        return new NodoResta(operandoIzquierdo, operandoDerecho);
+    } else if (operador.equals("*")) {
+        return new NodoMultiplicacion(operandoIzquierdo, operandoDerecho);
+    } else if (operador.equals("/")) {
+        return new NodoDivision(operandoIzquierdo, operandoDerecho);
+    } else if (operador.equals("sin")) {
+        return new NodoSeno(operandoIzquierdo);
+    } else if (operador.equals("tan")) {
+        return new NodoTangente(operandoIzquierdo);
+    } else {
+        throw new IllegalArgumentException("Operador desconocido: " + operador);
+    }
+}
 
     /**
-     * Los hijos <code> izq</code> y <code>der</code>
-     * que cada operador podría tener.
+     * Constructor sin argumentos.
      */
-    protected CompositeEA izq, der;
-
-    /**
-     * La precedencia en la jerarquía de operadores.
-     */
-    protected int precedence;
-    
-    /**
-     * Constructor por omisión.
-     */
-    public NodoOperador(){
-        izq=null;
-        der=null;
+    public NodoOperador() {
+        this.operandoIzquierdo = null;
+        this.operandoDerecho = null;
     }
 
-    /**
-     * Constructor que recibe parámetros.
-     * @param izq
-     * @param der
-     */
-    public NodoOperador(CompositeEA izq, CompositeEA der) {
-        this.izq=izq;
-        this.der=der;
-    }
-    
-    /**
-     * Constructor copia
-     * @param n
-     */
-    public NodoOperador(NodoOperador n){
-        izq=n.izq;
-        der=n.der;
-    }
-    
-    /**
-     * 
-     * @param izq
-     */
-    public void setIzq(CompositeEA izq){
-        this.izq=izq;
-    }
-    
-    /**
+        /**
+     * Establece el operando izquierdo.
      *
-     * @param der
+     * @param operandoIzquierdo El operando izquierdo.
      */
-    public void setDer(CompositeEA der){
-        this.der=der;
+    public void setOperandoIzquierdo(Expresion operandoIzquierdo) {
+        this.operandoIzquierdo = operandoIzquierdo;
     }
-    
+
     /**
+     * Establece el operando derecho.
      *
-     * @return
+     * @param operandoDerecho El operando derecho.
      */
-    public int getPrecedence(){
-        return precedence;
+    public void setOperandoDerecho(Expresion operandoDerecho) {
+        this.operandoDerecho = operandoDerecho;
     }
-    
+
     /**
-     * Método que se encarga de la represencación en una cadena de los nodos.
-     * Este método se implementa en esta clase abstracta para evitar repetir el
-     * código en las clases concretas.
-     * @return 
+     * Constructor para operadores binarios (operadores que toman dos operandos).
+     *
+     * @param operandoIzquierdo El primer operando del operador. Puede ser otro NodoOperador o una implementación simple de Expresion.
+     * @param operandoDerecho El segundo operando del operador. Puede ser otro NodoOperador o una implementación simple de Expresion.
+     */
+    public NodoOperador(Expresion operandoIzquierdo, Expresion operandoDerecho) {
+        this.operandoIzquierdo = operandoIzquierdo;
+        this.operandoDerecho = operandoDerecho;
+    }
+
+    /**
+     * Constructor para operadores unarios (operadores que toman un solo operando).
+     *
+     * @param operando El operando del operador. Puede ser otro NodoOperador o una implementación simple de Expresion.
+     */
+    public NodoOperador(Expresion operando) {
+        this.operandoIzquierdo = operando;
+        this.operandoDerecho = null;
+    }
+
+    /**
+     * Evalúa el operando izquierdo y el operando derecho (si existe) y realiza la operación correspondiente.
+     *
+     * @return El resultado de evaluar el operando izquierdo y el operando derecho (si existe) y realizar la operación correspondiente.
+     */
+    @Override
+    public abstract double evalua();
+
+    /**
+     * Devuelve el operando izquierdo.
+     *
+     * @return El operando izquierdo.
+     */
+    public Expresion getOperandoIzquierdo() {
+        return operandoIzquierdo;
+    }
+
+    /**
+     * Devuelve el operando derecho.
+     *
+     * @return El operando derecho.
+     */
+
+    public Expresion getOperandoDerecho() {
+        return operandoDerecho;
+    }
+
+  
+    /**
+     * Devuelve una representación en cadena del operador.
+     *
+     * @return Una representación en cadena del operador.
      */
     @Override
     public String toString() {
-        String operador = this instanceof NodoSuma ? " + "
-                        : this instanceof NodoResta ? " - "
-                        : this instanceof NodoMultiplicacion ? " * " : " / ";
-
-        if (izq != null) {
-            return "(" + izq + operador + der + ")";
-        }
-        return  "("+ operador + der + ")";
-
+        return String.format("%s", getPrecedencia());
     }
-    
+
     /**
-     * Método estático que genera una instancia de {@link NodoOperador}, dependiendo
-     * de el operando que representa.
-     * @param s El token con el operador.
-     * @param anteriorEsOperador Nos dice si el token anterior también fue operador
-     * (es necesario para el caso en el que la resta opera como operador unario).
-     * @return Un nodo concreto, dependiendo del operador <code>s</code>
-     * @throws ErrorDeSintaxisException En caso de recibir caracteres extraños.
+     * Devuelve una representación en cadena del operador y sus operandos.
+     *
+     * @return Una representación en cadena del operador y sus operandos.
      */
-    public static NodoOperador factoryMethodOperadorNuevo(String s,
-            boolean anteriorEsOperador) throws ErrorDeSintaxisException{
-        switch (s) {
-                case "+":
-                    return new NodoSuma(null,null);
-                case "-":
-                    NodoOperador o = new NodoResta(null,null);
-                    o.precedence=anteriorEsOperador? 3:0;
-                    return o;
-                case "*":
-                    return new NodoMultiplicacion(null,null);
-                case "/":
-                    return new NodoDivision(null,null);
-                case "(":
-                    return new NodoParentesis();
-                default:
-                    throw new ErrorDeSintaxisException("Error de Sintáxis");
+    public String toStringInOrder() {
+        String operador = toString();
+        if (operandoIzquierdo != null) {
+            if (operandoIzquierdo instanceof NodoOperador) {
+                operador = String.format("(%s %s)", ((NodoOperador) operandoIzquierdo).toStringPostOrder(), operador);
+            } else {
+                operador = String.format("(%s %s)", operandoIzquierdo.toString(), operador);
             }
+        }
+        if (operandoDerecho != null) {
+            if (operandoDerecho instanceof NodoOperador) {
+                operador = String.format("%s %s", operador, ((NodoOperador) operandoDerecho).toStringPostOrder());
+            } else {
+                operador = String.format("%s %s", operador, operandoDerecho.toString());
+            }
+        }
+        return operador;
     }
-    
+
+    /**
+     * Devuelve una representación en cadena del operador y sus operandos en notación postfija.
+     * 
+     * @return Una representación en cadena del operador y sus operandos en notación postfija.
+     */
+    public String toStringPostOrder() {
+        String operador = toString();
+        if (operandoIzquierdo != null && operandoIzquierdo instanceof NodoOperador) {
+            operador = String.format("%s %s", ((NodoOperador) operandoIzquierdo).toStringPostOrder(), operador);
+        }
+        if (operandoDerecho != null && operandoDerecho instanceof NodoOperador) {
+            operador = String.format("%s %s", operador, ((NodoOperador) operandoDerecho).toStringPostOrder());
+        }
+        return operador;
+    }
+    public int getPrecedence() {
+        return 0;
+    }
+
+
+
 }

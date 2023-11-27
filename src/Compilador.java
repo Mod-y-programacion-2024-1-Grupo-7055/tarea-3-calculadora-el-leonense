@@ -1,6 +1,9 @@
 import java.util.EmptyStackException;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.Arrays;
 
 /**
  * Clase diseñada para realizar la compilación del lenguaje de la calculadora.
@@ -19,9 +22,10 @@ public class Compilador {
      * {@link StringTokenizer}
      */
     public StringTokenizer analisisLexico(String cadena) {
-        cadena = cadena.replace(" ", "");
-        StringTokenizer tokenizer = new StringTokenizer(cadena, "()\\+\\*\\-\\/", true);
-        return tokenizer;
+        String[] tokens = Pattern.compile("(\\()|(\\))|(\\+)|(\\*)|(\\-)|(\\/)|(sqrt)|(sin)|(cos)|(tan)")
+                                  .split(cadena);
+        String tokenString = String.join(" ", tokens);
+        return new StringTokenizer(tokenString);
     }
 
     /**
@@ -43,13 +47,16 @@ public class Compilador {
         boolean anteriorEsOperador = true;
         while (tokenizer.hasMoreTokens()) {
             CompositeEA n;
-            NodoOperador no;
+            NodoOperador no=null;
             String actual = tokenizer.nextToken();
             
 
-            if (actual.equals(")")) {
-                casoParentesisDerecho(operadores, salida);
-                anteriorEsOperador = true;
+            if (actual.equals("(")) {
+        no = new NodoParentesis(no);
+        operadores.push(no);
+    } else if (actual.equals(")")) {
+        casoParentesisDerecho(operadores, salida);
+        anteriorEsOperador = true;
             } else {
                 try {
                     n = new NodoValor(Double.parseDouble(actual));
@@ -97,10 +104,10 @@ public class Compilador {
     private void popIntoOutput(NodoOperador op, Stack<CompositeEA> salida) throws ErrorDeSintaxisException {
         try {
             CompositeEA der = salida.pop();
-            op.setDer(der);
+            op.setOperandoDerecho(der);
             if (op.getPrecedence() < 3) {
                 CompositeEA izq = salida.pop();
-                op.setIzq(izq);
+                op.setOperandoIzquierdo(izq);
             }
             salida.push(op);
             

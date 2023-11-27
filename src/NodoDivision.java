@@ -1,38 +1,67 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 /**
- *
- * @author Alejandro Hernández Mora <alejandrohmora@ciencias.unam.mx>
+ * La clase NodoDivision representa la operación de división en una expresión matemática.
+ * Esta clase es un 'Composite' en el patrón de diseño Composite, ya que puede contener otros componentes.
  */
 public class NodoDivision extends NodoOperador {
 
+    /** Operador para la operación de división. */
+    static final String OPERADOR_DIVISION = "/";
+
+    /** Precedencia de la operación de división en la jerarquía de operaciones. */
+    static final int PRECEDENCIA_DIVISION = 2;
+
+    /** Indica si la operación de división es una operación binaria (verdadero) o unaria (falso). */
+    static final boolean ES_BINARIO = true;
+
     /**
+     * Constructor que toma dos operandos. 
+     * Estos operandos son las expresiones que se dividirán.
      *
-     * @param izq
-     * @param der
+     * @param operandoIzquierdo El primer operando de la división.
+     * @param operandoDerecho El segundo operando de la división.
      */
-    public NodoDivision(CompositeEA izq, CompositeEA der) {
-        super(izq, der);
-        precedence=1;
+    public NodoDivision(Expresion operandoIzquierdo, Expresion operandoDerecho) {
+        super(operandoIzquierdo, operandoDerecho);
+    }
+
+    public NodoDivision() {
     }
 
     /**
-     * La evaluación del nodo, divide la evaluación de los hijos izquierdo y
-     * derecho.
+     * La evaluación del nodo, divide las evaluaciones de los operandos.
      *
-     * @return la división del hijo izquierdo entre el hijo derecho.
+     * @return la división de los operandos.
      */
     @Override
     public double evalua() {
-        double d = der.evalua();
-        if (Double.compare(0, d) == 0) {
-            throw new ArithmeticException("No puedes dividir entre cero");
+        if (operandoDerecho.evalua() == 0) {
+            throw new ArithmeticException("División por cero");
         }
-        return izq.evalua() / d;
+        return operandoIzquierdo.evalua() / operandoDerecho.evalua();
+    }
+
+    /**
+     * Devuelve una representación en cadena del operador y sus operandos.
+     *
+     * @return Una representación en cadena del operador y sus operandos.
+     */
+    @Override
+    public String toString() {
+        return "/";
+    }
+
+    @Override
+    public String getOperador() {
+        return OPERADOR_DIVISION;
+    }
+
+    @Override
+    public int getPrecedencia() {
+        return PRECEDENCIA_DIVISION;
+    }
+
+    @Override
+    public boolean esBinario() {
+        return ES_BINARIO;
     }
 }

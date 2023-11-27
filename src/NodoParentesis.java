@@ -1,32 +1,63 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 /**
- *
- * @author Alejandro Hernández Mora <alejandrohmora@ciencias.unam.mx>
- */ 
+ * La clase NodoParentesis representa un paréntesis en una expresión matemática.
+ * Esta clase es un 'Composite' en el patrón de diseño Composite, ya que puede contener otros componentes.
+ */
 public class NodoParentesis extends NodoOperador {
 
+    /** Operador para el paréntesis. */
+    static final String OPERADOR_PARENTESIS = "()";
+
+    /** Precedencia de los paréntesis en la jerarquía de operaciones. */
+    static final int PRECEDENCIA_PARENTESIS = 3;
+
+    /** Indica si los paréntesis son una operación binaria (verdadero) o unaria (falso). */
+    static final boolean ES_BINARIO = false;
+
     /**
+     * Constructor que toma un operando. 
+     * Este operando es la expresión dentro de los paréntesis.
      *
+     * @param operando El operando dentro de los paréntesis.
      */
+    public NodoParentesis(Expresion operando) {
+        super(operando);
+    }
+
     public NodoParentesis() {
-        super();
-        precedence = 2;
     }
 
     /**
+     * La evaluación del nodo, simplemente devuelve la evaluación del operando.
      *
-     * @return
+     * @return la evaluación del operando.
      */
     @Override
     public double evalua() {
-        throw new UnsupportedOperationException("No se puede evaluar un parentesis"); //To change body of generated methods, choose Tools | Templates.
+        return operandoIzquierdo.evalua();
     }
 
-}
+    /**
+     * Devuelve una representación en cadena del paréntesis y su operando.
+     *
+     * @return Una representación en cadena del paréntesis y su operando.
+     */
+    @Override
+    public String toString() {
+        return "(" + operandoIzquierdo.toString() + ")";
+    }
 
+    @Override
+    public String getOperador() {
+        return OPERADOR_PARENTESIS;
+    }
+
+    @Override
+    public int getPrecedencia() {
+        return PRECEDENCIA_PARENTESIS;
+    }
+
+    @Override
+    public boolean esBinario() {
+        return ES_BINARIO;
+    }
+}
